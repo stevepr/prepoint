@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string.h>
 #include <math.h>
-#include "novas.h"
 
-#define USAGE   "Usage: prepoint --ra=rrrr --de=dddd --app --target_time=tttt [--hours=h.hhhh | --days=d.dddd] --interval=sec \n"
+
+#define USAGE   "Usage: prepoint --ra=rrrr.rrr --de=dddd.ddd --app --jd==jjjj.jjj [--hours=h.hhhh | --days=d.dddd] --interval=sec \n"
 #define EXIT_FAILURE	1
 #define cLF "\n"
 #define cCRLF "\r\n"
@@ -18,7 +18,125 @@ extern "C" int checkout_stars(void);
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Hello World!\n";
+	char* arg;
+	double dblTmp;
+
+	// Inputs
+	//
+	double ra_target = -100.0;			// target RA in deg (ICRS)
+	double de_target = -100.0;			// target DE in deg (ICRS)
+	double jd_target = 0.0;				// target time for prepoint location
+	double duration_hours = 24.0;		// duration of prepoint times list (hours)
+	double interval_sec = 10.0;			// interval between prepoint times (seconds)
+
+	// outputs
+	//
+	double ra_app;						// Apparent place of target RA deg
+	double de_app;						// Apparent place of target DE deg
+
+
+    //************
+    //  General init
+    //
+
+
+	/**********************************************
+	 *	Get Command Line parameters
+	 *		
+	 */
+
+	argc--;
+	argv++;
+	while (argc-- > 0) {
+		arg = *argv++;
+
+		// parse argument
+		//
+		if ((arg[0] != '-') || (arg[1] != '-'))
+		{
+			// no argument prefix
+			//
+			printf("argument syntax error\n");
+			printf(USAGE);
+			return(EXIT_FAILURE);
+		}
+
+		if (strncmp(arg + 2, "ra=", 3) == 0)
+		{
+			arg += 5;		// first char of numeric value
+			if (sscanf(arg, "%lf", &ra_target) == 0)
+			{
+				printf("error parsing ra= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+		}
+		else if (strncmp(arg + 2, "de=", 3) == 0)
+		{
+			arg += 5;		// first char of numeric value
+			if (sscanf(arg, "%lf", &de_target) == 0)
+			{
+				printf("error parsing de= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+		}
+		else if (strncmp(arg + 2, "jd=", 3) == 0)
+		{
+			arg += 5;		// first char of numeric value
+			if (sscanf(arg, "%lf", &jd_target) == 0)
+			{
+				printf("error parsing jd= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+		}
+		else if (strncmp(arg + 2, "hours=", 6) == 0)
+		{
+			arg += 8;		// first char of numeric value
+			if (sscanf(arg, "%lf", &dblTmp) == 0)
+			{
+				printf("error parsing hours= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+			duration_hours = dblTmp;
+		}
+		else if (strncmp(arg + 2, "days=", 5) == 0)
+		{
+			arg += 7;		// first char of numeric value
+			if (sscanf(arg, "%lf", &dblTmp) == 0)
+			{
+				printf("error parsing days= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+			duration_hours = dblTmp * 24.0;		// days to hours
+		}
+		else if (strncmp(arg + 2, "interval=", 9) == 0)
+		{
+			arg += 11;		// first char of numeric value
+			if (sscanf(arg, "%lf", &interval_sec) == 0)
+			{
+				printf("error parsing interval= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+		}
+
+
+	} // end of command line parsing
+
+	// validate input arguments
+	//
+
+	if (interval_sec < 0)
+	{
+		printf("argument error: interval < 0.\n");
+		printf(USAGE);
+		return(EXIT_FAILURE);
+	}
+
 
     // run basic star validation
     //

@@ -45,6 +45,13 @@
       #include "nutation.h"
    #endif
 
+// sbp ... for handling calls from c++ main routine
+//
+#ifdef __cplusplus
+#define EXTERNC extern "C"
+#else
+#define EXTERNC
+#endif
 
 /*
    Structures
@@ -290,7 +297,7 @@
 
                         double *ira, double *idec);
 
-   short int place (double jd_tt, object *cel_object,
+   EXTERNC short int place(double jd_tt, object * cel_object,
                     observer *location, double delta_t,
                     short int coord_sys, short int accuracy,
 
