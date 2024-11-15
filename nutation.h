@@ -13,19 +13,27 @@
 #ifndef _NUTATION_
    #define _NUTATION_
 
+// sbp ... for handling calls from c++ main routine
+//
+#ifdef __cplusplus
+#define EXTERNC extern "C"
+#else
+#define EXTERNC
+#endif
+
 /*
    Function prototypes
 */
 
-   void iau2000a (double jd_high, double jd_low,
+    EXTERNC void iau2000a (double jd_high, double jd_low,
 
                   double *dpsi, double *deps);
 
-   void iau2000b (double jd_high, double jd_low,
+    EXTERNC void iau2000b (double jd_high, double jd_low,
 
                   double *dpsi, double *deps);
 
-   void nu2000k (double jd_high, double jd_low,
+    EXTERNC void nu2000k (double jd_high, double jd_low,
 
                  double *dpsi, double *deps);
 

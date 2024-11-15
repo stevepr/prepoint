@@ -237,62 +237,62 @@
    Function prototypes
 */
 
-   double *readeph (int mp, char *name, double jd,
+   EXTERNC double *readeph (int mp, char *name, double jd,
 
                     int *err);
 
-   short int app_star (double jd_tt, cat_entry *star,
+   EXTERNC short int app_star (double jd_tt, cat_entry *star,
                        short int accuracy,
 
                        double *ra, double *dec);
 
-   short int virtual_star (double jd_tt, cat_entry *star,
+   EXTERNC short int virtual_star (double jd_tt, cat_entry *star,
                            short int accuracy,
 
                            double *ra, double *dec);
 
-   short int astro_star (double jd_tt, cat_entry *star,
+   EXTERNC short int astro_star (double jd_tt, cat_entry *star,
                          short int accuracy,
 
                          double *ra, double *dec);
 
-   short int app_planet (double jd_tt, object *ss_body,
+   EXTERNC short int app_planet (double jd_tt, object *ss_body,
                          short int accuracy,
 
                          double *ra, double *dec, double *dis);
 
-   short int virtual_planet (double jd_tt, object *ss_body,
+   EXTERNC short int virtual_planet (double jd_tt, object *ss_body,
                              short int accuracy,
 
                              double *ra, double *dec, double *dis);
 
-   short int astro_planet (double jd_tt, object *ss_body,
+   EXTERNC short int astro_planet (double jd_tt, object *ss_body,
                            short int accuracy,
 
                            double *ra, double *dec, double *dis);
 
-   short int topo_star (double jd_tt, double delta_t, cat_entry *star,
+   EXTERNC short int topo_star (double jd_tt, double delta_t, cat_entry *star,
                         on_surface *position, short int accuracy,
 
                         double *ra, double *dec);
 
-   short int local_star (double jd_tt, double delta_t, cat_entry *star,
+   EXTERNC short int local_star (double jd_tt, double delta_t, cat_entry *star,
                          on_surface *position, short int accuracy,
 
                          double *ra, double *dec);
 
-   short int topo_planet (double jd_tt, object *ss_body, double delta_t,
+   EXTERNC short int topo_planet (double jd_tt, object *ss_body, double delta_t,
                           on_surface *position, short int accuracy,
 
                           double *ra, double *dec, double *dis);
 
-   short int local_planet (double jd_tt, object *ss_body,
+   EXTERNC short int local_planet (double jd_tt, object *ss_body,
                            double delta_t, on_surface *position,
                            short int accuracy,
 
                            double *ra, double *dec, double *dis);
 
-   short int mean_star (double jd_tt, double ra, double dec,
+   EXTERNC short int mean_star (double jd_tt, double ra, double dec,
                         short int accuracy,
 
                         double *ira, double *idec);
@@ -303,215 +303,215 @@
 
                     sky_pos *output);
 
-   void equ2gal (double rai, double deci,
+   EXTERNC void equ2gal (double rai, double deci,
 
                  double *glon, double *glat);
 
-   short int equ2ecl (double jd_tt, short int coord_sys,
+   EXTERNC short int equ2ecl (double jd_tt, short int coord_sys,
                       short int accuracy, double ra, double dec,
 
                       double *elon, double *elat);
 
-   short int equ2ecl_vec (double jd_tt, short int coord_sys,
+   EXTERNC short int equ2ecl_vec (double jd_tt, short int coord_sys,
                           short int accuracy, double *pos1,
 
                           double *pos2);
 
-   short int ecl2equ_vec (double jd_tt, short int coord_sys,
+   EXTERNC short int ecl2equ_vec (double jd_tt, short int coord_sys,
                           short int accuracy, double *pos1,
 
                           double *pos2);
 
-   void equ2hor (double jd_ut1, double delta_t, short int accuracy,
+   EXTERNC void equ2hor (double jd_ut1, double delta_t, short int accuracy,
                  double xp, double yp, on_surface *location, double ra,
                  double dec, short int ref_option,
 
                  double *zd, double *az, double *rar, double *decr);
 
-   short int gcrs2equ (double jd_tt, short int coord_sys,
+   EXTERNC short int gcrs2equ (double jd_tt, short int coord_sys,
                        short int accuracy, double rag, double decg,
 
                        double *ra, double *dec);
 
-   short int sidereal_time (double jd_high, double jd_low,
+   EXTERNC short int sidereal_time (double jd_high, double jd_low,
                             double delta_t, short int gst_type,
                             short int method, short int accuracy,
 
                             double *gst);
 
-   double era (double jd_high, double jd_low);
+   EXTERNC double era (double jd_high, double jd_low);
 
-   short int ter2cel (double jd_ut_high, double jd_ut_low,
+   EXTERNC short int ter2cel (double jd_ut_high, double jd_ut_low,
                       double delta_t, short int method,
                       short int accuracy, short int option, double xp,
                       double yp, double *vec1,
 
                       double *vec2);
 
-   short int cel2ter (double jd_ut_high, double jd_ut_low,
+   EXTERNC short int cel2ter (double jd_ut_high, double jd_ut_low,
                       double delta_t, short int method,
                       short int accuracy, short int option,
                       double xp, double yp, double *vec1,
 
                       double *vec2);
 
-   void spin (double angle, double *pos1,
+   EXTERNC void spin (double angle, double *pos1,
 
               double *pos2);
 
-   void wobble (double tjd, short int direction, double xp, double yp,
+   EXTERNC void wobble (double tjd, short int direction, double xp, double yp,
                 double *pos1,
 
                 double *pos2);
 
-   void terra (on_surface *location, double st,
+   EXTERNC void terra (on_surface *location, double st,
 
                double *pos, double *vel);
 
-   void e_tilt (double jd_tdb, short int accuracy,
+   EXTERNC void e_tilt (double jd_tdb, short int accuracy,
 
                 double *mobl, double *tobl, double *ee, double *dpsi,
                 double *deps);
 
-   short int cel_pole (double tjd, short int type, double dpole1,
+   EXTERNC short int cel_pole (double tjd, short int type, double dpole1,
                        double dpole2);
 
-   double ee_ct (double jd_high, double jd_low, short int accuracy);
+   EXTERNC double ee_ct (double jd_high, double jd_low, short int accuracy);
 
-   void frame_tie (double *pos1, short int direction,
+   EXTERNC void frame_tie (double *pos1, short int direction,
 
                    double *pos2);
 
-   void proper_motion (double jd_tdb1, double *pos, double *vel,
+   EXTERNC void proper_motion (double jd_tdb1, double *pos, double *vel,
                        double jd_tdb2,
 
                        double *pos2);
 
-   void bary2obs (double *pos, double *pos_obs,
+   EXTERNC void bary2obs (double *pos, double *pos_obs,
 
                   double *pos2, double *lighttime);
 
-   short int geo_posvel (double jd_tt, double delta_t,
+   EXTERNC short int geo_posvel (double jd_tt, double delta_t,
                          short int accuracy, observer *obs,
 
                          double *pos, double *vel);
 
-   short int light_time (double jd_tdb, object *ss_object,
+   EXTERNC short int light_time (double jd_tdb, object *ss_object,
                          double pos_obs[3], double tlight0,
                          short int accuracy,
 
                          double pos[3], double *tlight);
 
-   double d_light (double *pos1, double *pos_obs);
+   EXTERNC double d_light (double *pos1, double *pos_obs);
 
-   short int grav_def (double jd_tdb, short int loc_code,
+   EXTERNC short int grav_def (double jd_tdb, short int loc_code,
                        short int accuracy, double *pos1, double *pos_obs,
 
                        double *pos2);
 
-   void grav_vec (double *pos1, double *pos_obs, double *pos_body,
+   EXTERNC void grav_vec (double *pos1, double *pos_obs, double *pos_body,
                   double rmass,
 
                   double *pos2);
 
-   void aberration (double *pos, double *ve, double lighttime,
+   EXTERNC void aberration (double *pos, double *ve, double lighttime,
 
                     double *pos2);
 
-   void rad_vel (object *cel_object, double *pos, double *vel,
+   EXTERNC void rad_vel (object *cel_object, double *pos, double *vel,
                  double *vel_obs, double d_obs_geo, double d_obs_sun,
                  double d_obj_sun,
 
                  double *rv);
 
-   short int precession (double jd_tdb1, double *pos1, double jd_tdb2,
+   EXTERNC short int precession (double jd_tdb1, double *pos1, double jd_tdb2,
 
                          double *pos2);
 
-   void nutation (double jd_tdb, short int direction, short int accuracy,
+   EXTERNC void nutation (double jd_tdb, short int direction, short int accuracy,
                   double *pos,
 
                   double *pos2);
 
-   void nutation_angles (double t, short int accuracy,
+   EXTERNC void nutation_angles (double t, short int accuracy,
 
                          double *dpsi, double *deps);
 
-   void fund_args (double t,
+   EXTERNC void fund_args (double t,
 
                    double a[5]);
 
-   double mean_obliq (double jd_tdb);
+   EXTERNC double mean_obliq (double jd_tdb);
 
-   short int vector2radec (double *pos,
+   EXTERNC short int vector2radec (double *pos,
 
                            double *ra, double *dec);
 
-   void radec2vector (double ra, double dec, double dist,
+   EXTERNC void radec2vector (double ra, double dec, double dist,
 
                       double *vector);
 
-   void starvectors (cat_entry *star,
+   EXTERNC void starvectors (cat_entry *star,
 
                      double *pos, double *vel);
 
-   void tdb2tt (double tdb_jd,
+   EXTERNC void tdb2tt (double tdb_jd,
 
                 double *tt_jd, double *secdiff);
 
-   short int cio_ra (double jd_tt, short int accuracy,
+   EXTERNC short int cio_ra (double jd_tt, short int accuracy,
 
                      double *ra_cio);
 
-   short int cio_location (double jd_tdb, short int accuracy,
+   EXTERNC short int cio_location (double jd_tdb, short int accuracy,
 
                            double *ra_cio, short int *ref_sys);
 
-   short int cio_basis (double jd_tdb, double ra_cio, short int ref_sys,
+   EXTERNC short int cio_basis (double jd_tdb, double ra_cio, short int ref_sys,
                         short int accuracy,
 
                         double *x, double *y, double *z);
 
-   short int cio_array (double jd_tdb, long int n_pts,
+   EXTERNC short int cio_array (double jd_tdb, long int n_pts,
 
                         ra_of_cio *cio);
 
-   double ira_equinox (double jd_tdb, short int equinox,
+   EXTERNC double ira_equinox (double jd_tdb, short int equinox,
                        short int accuracy);
 
-   short int ephemeris (double jd[2], object *cel_obj, short int origin,
+   EXTERNC short int ephemeris (double jd[2], object *cel_obj, short int origin,
                         short int accuracy,
 
                         double *pos, double *vel);
 
-   void transform_hip (cat_entry *hipparcos,
+   EXTERNC void transform_hip (cat_entry *hipparcos,
 
                        cat_entry *hip_2000);
 
-   short int transform_cat (short int option, double date_incat,
+   EXTERNC short int transform_cat (short int option, double date_incat,
                             cat_entry *incat, double date_newcat,
                             char newcat_id[SIZE_OF_CAT_NAME],
 
                             cat_entry *newcat);
 
-   void limb_angle (double pos_obj[3], double pos_obs[3],
+   EXTERNC void limb_angle (double pos_obj[3], double pos_obs[3],
 
                     double *limb_ang, double *nadir_ang);
 
-   double refract (on_surface *location, short int ref_option,
+   EXTERNC double refract (on_surface *location, short int ref_option,
                    double zd_obs);
 
-   double julian_date (short int year, short int month, short int day,
+   EXTERNC double julian_date (short int year, short int month, short int day,
                        double hour);
 
-   void cal_date (double tjd,
+   EXTERNC void cal_date (double tjd,
 
                   short int *year, short int *month, short int *day,
                   double *hour);
 
-   double norm_ang (double angle);
+   EXTERNC double norm_ang (double angle);
 
-   short int make_cat_entry (char star_name[SIZE_OF_OBJ_NAME],
+   EXTERNC short int make_cat_entry (char star_name[SIZE_OF_OBJ_NAME],
                              char catalog[SIZE_OF_CAT_NAME],
                         long int star_num, double ra, double dec,
                         double pm_ra, double pm_dec, double parallax,
@@ -519,38 +519,38 @@
 
                         cat_entry *star);
 
-   short int make_object (short int type, short int number,
+   EXTERNC short int make_object (short int type, short int number,
                           char name[SIZE_OF_OBJ_NAME],
                           cat_entry *star_data,
 
                           object *cel_obj);
 
-   short int make_observer (short int where, on_surface *obs_surface,
+   EXTERNC short int make_observer (short int where, on_surface *obs_surface,
                             in_space *obs_space,
 
                             observer *obs);
 
-   void make_observer_at_geocenter (
+   EXTERNC void make_observer_at_geocenter (
 
                                  observer *obs_at_geocenter);
 
-   void make_observer_on_surface (double latitude, double longitude,
+   EXTERNC void make_observer_on_surface (double latitude, double longitude,
                                   double height, double temperature,
                                   double pressure,
 
                                   observer *obs_on_surface);
 
-   void make_observer_in_space (double sc_pos[3], double sc_vel[3],
+   EXTERNC void make_observer_in_space (double sc_pos[3], double sc_vel[3],
 
                                 observer *obs_in_space);
 
-   void make_on_surface (double latitude, double longitude,
+   EXTERNC void make_on_surface (double latitude, double longitude,
                          double height,
                          double temperature, double pressure,
 
                          on_surface *obs_surface);
 
-   void make_in_space (double sc_pos[3], double sc_vel[3],
+   EXTERNC void make_in_space (double sc_pos[3], double sc_vel[3],
 
                        in_space *obs_space);
 
