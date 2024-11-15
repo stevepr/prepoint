@@ -249,11 +249,11 @@ int main(int argc, char* argv[])
 	im = (int)dblTmp;
 	dblTmp = dblTmp - im;
 	isec = (int)(dblTmp * 60);
-	printf("Target Date: %04d-%02d-%02d %02d:%02d:%02d\n",yr,mon,day,ih,im,isec);
+	printf("Target Date (UTC): %15.7lf JD = %04d-%02d-%02d %02d:%02d:%02d\n",jd_target, yr,mon,day,ih,im,isec);
 
 	r2hms(ra_target, &rh, &rm, &rs);
 	d2dms(de_target, &sign, &dd, &dm, &ds);
-	printf("Target GSRS position: %02d:%02d:%05.2f, %c%02d:%02d:%05.2f\n", rh,rm,rs,sign,dd,dm,ds);
+	printf("Target GCRS position: %02d:%02d:%05.2f, %c%02d:%02d:%05.2f\n", rh,rm,rs,sign,dd,dm,ds);
 
 	r2hms(ra_jnow, &rh, &rm, &rs);
 	d2dms(de_jnow, &sign, &dd, &dm, &ds);
@@ -265,6 +265,8 @@ int main(int argc, char* argv[])
 	//		de_tete = de_jnow (will remain constant)
 	//		ra_tete = GAST(jd_prepoint) - H_target
 	//
+
+	printf("Prepoint DateTime, GCRS RA, GCRS DE, TETE RA, TETE DE\n");		// output header line
 
 	de_tete = de_jnow;										// DE in TETE frame does not change
 	sidereal_time(jd_target, 0.0, deltaT, 1, 1, 1, &gast);	// gast at Target time
@@ -297,14 +299,14 @@ int main(int argc, char* argv[])
 		im = (int)dblTmp;
 		dblTmp = dblTmp - im;
 		isec = (int)(dblTmp * 60);
-		printf("Prepoint Date: %04d-%02d-%02d %02d:%02d:%02d\n", yr, mon, day, ih, im, isec);
+		printf("%04d-%02d-%02d %02d:%02d:%02d,", yr, mon, day, ih, im, isec);
 
 		r2hms(ra_gcrs, &rh, &rm, &rs);
 		d2dms(de_gcrs, &sign, &dd, &dm, &ds);
-		printf("Prepoint GSRS position: %02d:%02d:%05.2f, %c%02d:%02d:%05.2f\n", rh, rm, rs, sign, dd, dm, ds);
+		printf(" %02d:%02d:%05.2f, %c%02d:%02d:%05.2f,", rh, rm, rs, sign, dd, dm, ds);
 		r2hms(ra_tete, &rh, &rm, &rs);
 		d2dms(de_tete, &sign, &dd, &dm, &ds);
-		printf("Prepoint TETE position: %02d:%02d:%05.2f, %c%02d:%02d:%05.2f\n", rh, rm, rs, sign, dd, dm, ds);
+		printf(" %02d:%02d:%05.2f, %c%02d:%02d:%05.2f\n", rh, rm, rs, sign, dd, dm, ds);
 
 
 		// next time
