@@ -1,4 +1,26 @@
-// prepoint.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// prepoint application
+//	Generates a list of PrePointing ICRS RA,DE positions for a desired Target ICRS RA,DE position and Target Time
+//		When non-moving scope is pointed at a given prepoint location at the prepoint time, the target position will
+//		drift into the center of the FOV at the specified target time.
+//	
+//	Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s --time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss [--hours=h.hhhh | --days=d.dddd] [--interval=sec] \n
+//			ra,de = ICRS target position
+//			time = Target Time (UTC)
+//			hours or days = duration of time prior to the target time for which prepoint times are generated
+//			interval = interval between each prepoint time in the output list of prepoint times & positions
+// 
+//	OUTPUT
+//		Header lines and a CSV table is sent to the standard output.  TETE positions are essentially JNOW for mounts.
+// 
+//		example:
+//			Target Date (UTC): 2460629.7708333 JD = 2024-11-15 06:30:00
+//			Target GCRS position: 05:26:17.50, +28:36:28.30
+//			Target TETE position: 05:27:51.67, +28:37:48.33
+//			Prepoint DateTime, GCRS RA, GCRS DE, TETE RA, TETE DE
+//			2024-11-15 06:29:50, 05:26:07.48, +28:36:27.92, 05:27:41.65, +28:37:48.33
+// 
+//	NOTES
+//		This program uses the NOVAS library for astrometric computations.
 //
 
 #include <iostream>
@@ -223,10 +245,10 @@ int main(int argc, char* argv[])
 
 	/**********************************************
 	 *	Compute prepoint positions
-	 *		- compute JNOW and Alt/Az (Horizon) position of target at target time
-	 *		- output JNOW and Alt/Az position at target time
+	 *		- compute TETE position of target at target time
+	 *		- output TETE position at target time
 	 *		- for each prepoint time
-	 *			- output JNOW and GCRS positions at prepoint time
+	 *			- output TETE and GCRS positions at prepoint time
 	 *
 	 */
 	jd_tdb = jd_target + (deltaT/86400.0);
@@ -338,7 +360,7 @@ int main(int argc, char* argv[])
    INPUT
    ARGUMENTS:
 	jd_tdb (double)
-		TDB time for JNOW (true equator/equinox)
+		TDB time for TETE (true equator/equinox)
 	ra_gcrs (double)
 		RA of star in GCRS
 	de_gcrs (double)
