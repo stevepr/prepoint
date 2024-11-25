@@ -3,11 +3,13 @@
 //		When non-moving scope is pointed at a given prepoint location at the prepoint time, the target position will
 //		drift into the center of the FOV at the specified target time.
 //	
-//	Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s --time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss [--hours=h.hhhh | --days=d.dddd] [--interval=sec] \n
-//			ra,de = ICRS target position
-//			time = Target Time (UTC)
+//	Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s --time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss [--hours=h.hhhh | --days=d.dddd] [--interval=sec] 
+//						[--start=jjjj.jjj|yyyy-mm-dd_hh:mm:ss]
+//			ra,de = ICRS target position (deg or hms,dms)
+//			time = Target acquisition time (UTC)
 //			hours or days = duration of time prior to the target time for which prepoint times are generated
-//			interval = interval between each prepoint time in the output list of prepoint times & positions
+//			interval = interval between each prepoint time in the output list of prepoint times & positions (sec)
+//			start = latest prepoint time in the output list
 // 
 //	OUTPUT
 //		Header lines and a CSV table is sent to the standard output.  TETE positions are essentially JNOW for mounts.
@@ -20,7 +22,8 @@
 //			2024-11-15 06:29:50, 05:26:07.48, +28:36:27.92, 05:27:41.65, +28:37:48.33
 // 
 //	NOTES
-//		This program uses the NOVAS library for astrometric computations.
+//		This program uses the NOVAS library for astrometric computations as developed by
+//		the Astronomical Applications Department of the U.S. Naval Observatory
 //
 
 #include <iostream>
@@ -31,11 +34,23 @@
 #include "nutation.h"
 
 
-#define USAGE   "Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s --time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss [--hours=h.hhhh | --days=d.dddd] [--interval=sec] \n"
+#define USAGE   "Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s\n"\
+				"			--time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss [--hours=h.hhhh | --days=d.dddd]\n"\
+				"			[--interval=sec] [--start=jjjj.jjj|yyyy-mm-dd_hh:mm:ss]\n"\
+				"	ra,de = ICRS target position (deg or hms,dms)\n"\
+				"	time = target acquistion time (UTC)\n"\
+				"	hours or days = duration of time prior to the target time\n"\
+				"	                for which prepoint times are generated\n"\
+				"	interval = interval between each prepoint time in the output list\n"\
+				"	           of prepoint times & positions (sec)\n"\
+				"	start = latest prepoint time in the output list.\n"
+
 #define EXIT_FAILURE	1
 #define cLF "\n"
 #define cCRLF "\r\n"
 #define	C_IMAXLINE		1000					/* Max chars in an input line */
+
+#define MJD_OFFSET 2400000.5
 
 // function prototypes
 //
@@ -75,6 +90,7 @@ int main(int argc, char* argv[])
 	double duration_hours = 24.0;		// duration of prepoint times list (hours)
 	double interval_sec = 10.0;			// interval between prepoint times (seconds)
 	double deltaT = 69.5;
+	double jd_start = -1.0;				// < 0 => start with first interval before target time
 
 	// outputs
 	//
@@ -94,8 +110,8 @@ int main(int argc, char* argv[])
 	//
 	double H_target;			// Greenwich Hour Angle (hours)
 	double jd_tdb;
-	double jd_prepoint;			// prepoint time UTC
-	double jd_end;
+	double mjd_prepoint;		// prepoint time UTC, MJD to avoid rounding errors due to double precision
+	double mjd_end;
 	double ra_gcrs;				// GCRS coordinate at prepoint time
 	double de_gcrs;
 	double ra_tete;				// TETE coordinate at prepoint time (approx jnow)
@@ -131,7 +147,7 @@ int main(int argc, char* argv[])
 			return(EXIT_FAILURE);
 		}
 
-		if (strncmp(arg + 2, "ra=", 3) == 0)				// -ra=
+		if (strncmp(arg + 2, "ra=", 3) == 0)				// --ra=
 		{
 			arg += 5;		// first char of numeric value
 			if (parseRA(arg,&ra_target) != 0)
@@ -141,7 +157,7 @@ int main(int argc, char* argv[])
 				return(EXIT_FAILURE);
 			}
 		}
-		else if (strncmp(arg + 2, "de=", 3) == 0)			// -de=
+		else if (strncmp(arg + 2, "de=", 3) == 0)			// --de=
 		{
 			arg += 5;		// first char of numeric value
 			if (parseDE(arg,&de_target) != 0)
@@ -151,7 +167,7 @@ int main(int argc, char* argv[])
 				return(EXIT_FAILURE);
 			}
 		}
-		else if (strncmp(arg + 2, "time=", 5) == 0)			// -time=
+		else if (strncmp(arg + 2, "time=", 5) == 0)			// --time=
 		{
 			arg += 7;		// first char of numeric value
 			if (parseDateTime(arg,&jd_target) != 0)
@@ -161,7 +177,7 @@ int main(int argc, char* argv[])
 				return(EXIT_FAILURE);
 			}
 		}
-		else if (strncmp(arg + 2, "hours=", 6) == 0)		// -hours=
+		else if (strncmp(arg + 2, "hours=", 6) == 0)		// --hours=
 		{
 			arg += 8;		// first char of numeric value
 			if (sscanf(arg, "%lf", &dblTmp) == 0)
@@ -172,7 +188,7 @@ int main(int argc, char* argv[])
 			}
 			duration_hours = dblTmp;
 		}
-		else if (strncmp(arg + 2, "days=", 5) == 0)			// -days=
+		else if (strncmp(arg + 2, "days=", 5) == 0)			// --days=
 		{
 			arg += 7;		// first char of numeric value
 			if (sscanf(arg, "%lf", &dblTmp) == 0)
@@ -183,12 +199,32 @@ int main(int argc, char* argv[])
 			}
 			duration_hours = dblTmp * 24.0;		// days to hours
 		}
-		else if (strncmp(arg + 2, "interval=", 9) == 0)		// -interval=
+		else if (strncmp(arg + 2, "interval=", 9) == 0)		// --interval=
 		{
 			arg += 11;		// first char of numeric value
 			if (sscanf(arg, "%lf", &interval_sec) == 0)
 			{
 				printf("error parsing interval= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+		}
+		else if (strncmp(arg + 2, "start=", 6) == 0)		// --start=
+		{
+			arg += 8;		// first char of numeric value
+			if (parseDateTime(arg, &jd_start) != 0)
+			{
+				printf("error parsing start= value.\n");
+				printf(USAGE);
+				return(EXIT_FAILURE);
+			}
+		}
+		else if (strncmp(arg + 2, "deltaT=", 7) == 0)		// --deltaT=
+		{
+			arg += 9;		// first char of numeric value
+			if (sscanf(arg, "%lf", &deltaT) == 0)
+			{
+				printf("error parsing deltaT= value.\n");
 				printf(USAGE);
 				return(EXIT_FAILURE);
 			}
@@ -240,6 +276,13 @@ int main(int argc, char* argv[])
 		return(EXIT_FAILURE);
 	}
 
+	if (jd_start < 0.0)
+	{
+		// default -> start prepoint list with first interval before target time
+		//
+		jd_start = jd_target - interval_sec / 86400.0;
+	}
+
 	// DONE gather input parameters
 	//
 
@@ -281,6 +324,8 @@ int main(int argc, char* argv[])
 	d2dms(de_jnow, &sign, &dd, &dm, &ds);
 	printf("Target TETE position: %02d:%02d:%05.2f, %c%02d:%02d:%05.2f\n", rh, rm, rs, sign, dd, dm, ds);
 
+	printf("deltaT = %f\n", deltaT);
+
 
 	//  now compute prepoint positions/times
 	//	
@@ -294,18 +339,24 @@ int main(int argc, char* argv[])
 	sidereal_time(jd_target, 0.0, deltaT, 1, 1, 1, &gast);	// gast at Target time
 	H_target = gast - ra_jnow / 15;							// target H -> this will remain constant in the TETE frame
 
-	jd_prepoint = jd_target - interval_sec / 86400.0;
-	jd_end = jd_target - duration_hours / 24.0;
-	while (jd_prepoint > jd_end)
+	mjd_prepoint = jd_start - MJD_OFFSET;
+	mjd_end = jd_start - MJD_OFFSET - (duration_hours / 24.0);
+	while (mjd_prepoint > mjd_end)
 	{
+
 		// compute new ra_tete from H
 		//
-		sidereal_time(jd_prepoint, 0.0, deltaT, 1, 1, 1, &gast);		// gast at prepoint time
-		ra_tete = (gast - H_target) * 15;								// compute ra_tete (deg)
+		sidereal_time(mjd_prepoint + MJD_OFFSET, 0.0, deltaT, 1, 1, 1, &gast);		// gast at prepoint time (hours)
+		ra_tete = (gast - H_target) * 15;								// compute ra_tete (hours -> deg)
+		if (ra_tete < 0)
+		{
+			ra_tete =360.0 + fmod(ra_tete, 360.0);			// module 360.0 degrees
+		}
+	
 
 		// compute GCRS position from TETE position
 		//
-		jd_tdb = jd_prepoint + (deltaT / 86400.0);
+		jd_tdb = mjd_prepoint + MJD_OFFSET + (deltaT / 86400.0);
 		if (tete2gcrs(jd_tdb, ra_tete, de_tete, &ra_gcrs, &de_gcrs) != 0)
 		{
 			printf("Error from tete2gcrs.");
@@ -314,7 +365,7 @@ int main(int argc, char* argv[])
 
 		// output prepoint data
 		//
-		cal_date(jd_prepoint, &yr, &mon, &day, &hr);
+		cal_date(mjd_prepoint + MJD_OFFSET, &yr, &mon, &day, &hr);
 		ih = (int)hr;
 		dblTmp = hr - ih;
 		dblTmp = dblTmp * 60.0;
@@ -333,7 +384,7 @@ int main(int argc, char* argv[])
 
 		// next time
 		//
-		jd_prepoint -= interval_sec / 86400.0;
+		mjd_prepoint -= interval_sec / 86400.0;
 
 	} // end of loop through prepoint times
 
