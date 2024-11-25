@@ -52,6 +52,8 @@
 
 #define MJD_OFFSET 2400000.5
 
+#define VERSION 1.00
+
 // function prototypes
 //
 int gcrs2tete(double jd_tdb, double ra_gcrs, double de_gcrs,
@@ -307,6 +309,7 @@ int main(int argc, char* argv[])
 	//  Target GCRS coords
 	//  Target TETE coords
 	//
+	printf("Version %5.2f\n", VERSION);
 	cal_date(jd_target, &yr, &mon, &day, &hr);
 	ih = (int)hr;
 	dblTmp = hr - ih;
