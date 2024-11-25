@@ -34,8 +34,8 @@
 #include "nutation.h"
 
 
-#define USAGE   "Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s\n"\
-				"			--time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss [--hours=h.hhhh | --days=d.dddd]\n"\
+#define USAGE   "Usage: prepoint --ra=ddd.ddd|hh:mm:ss.s --de=ddd.ddd|+dd:mm:ss.s --time==jjjj.jjj|yyyy-mm-dd_hh:mm:ss \n"\
+				"			[--hours=h.hhhh | --days=d.dddd]\n"\
 				"			[--interval=sec] [--start=jjjj.jjj|yyyy-mm-dd_hh:mm:ss]\n"\
 				"	ra,de = ICRS target position (deg or hms,dms)\n"\
 				"	time = target acquistion time (UTC)\n"\
@@ -135,6 +135,15 @@ int main(int argc, char* argv[])
 
 	argc--;
 	argv++;
+
+	if (argc < 3)
+	{
+		printf("Not enough arguments.\n");
+		printf(USAGE);
+		printf("version %5.2f", VERSION);
+		return(EXIT_FAILURE);
+	}
+
 	while (argc-- > 0) {
 		arg = *argv++;
 
