@@ -40,9 +40,9 @@
 				"	ra,de = ICRS target position (deg or hms,dms)\n"\
 				"	time = target acquistion time (UTC)\n"\
 				"	hours or days = duration of time prior to the target time\n"\
-				"	                for which prepoint times are generated\n"\
+				"	                for which prepoint times are generated. default is 24 hours.\n"\
 				"	interval = interval between each prepoint time in the output list\n"\
-				"	           of prepoint times & positions (sec)\n"\
+				"	           of prepoint times & positions (sec). default is 10 sec.\n"\
 				"	start = latest prepoint time in the output list.\n"
 
 #define EXIT_FAILURE	1
